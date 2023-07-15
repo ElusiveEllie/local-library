@@ -26,19 +26,13 @@ function partitionBooksByBorrowedStatus(books) {
 }
 
 function getBorrowersForBook(book, accounts) {
-  const borrows = book.borrows;
   // Limit borrows to 10
-  const lastTenBorrows = [];
-  borrows.forEach((borrow) =>
-    lastTenBorrows.length < 10 ? lastTenBorrows.push(borrow) : null
-  );
+  const borrows = book.borrows.slice(0, 10);
   // Map array to have accounts and returned status
-  return lastTenBorrows.map((borrow) => {
-    return {
-      ...findAccountById(accounts, borrow.id),
-      returned: borrow.returned,
-    };
-  });
+  return borrows.map(({ id, returned }) => ({
+    ...findAccountById(accounts, id),
+    returned,
+  }));
 }
 
 module.exports = {

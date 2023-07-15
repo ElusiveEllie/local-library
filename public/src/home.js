@@ -16,7 +16,7 @@ function getTotalAccountsCount(accounts) {
 function getBorrowedBooks(books) {
   // Return array of books that are currently borrowed
   return books.filter((book) =>
-    book.borrows.some((borrow) => borrow.returned === false)
+    book.borrows.some((borrow) => !borrow.returned)
   );
 }
 
@@ -30,11 +30,8 @@ function getFiveHighestCounts(unsortedArray) {
   const sortedArray = unsortedArray.sort(
     (optionA, optionB) => optionB.count - optionA.count
   );
-  const fiveHighest = [];
   // Limit sorted array to length of 5
-  for (const item of sortedArray) {
-    fiveHighest.length < 5 ? fiveHighest.push(item) : null;
-  }
+  const fiveHighest = sortedArray.slice(0, 5);
   return fiveHighest;
 }
 
@@ -43,9 +40,8 @@ function getKeyCount(object, key) {
   const keyArray = object.map((item) => item[key]);
   // make Object counting each time key appears
   const keyCount = keyArray.reduce((result, keyAppearance) => {
-    result[keyAppearance]
-      ? (result[keyAppearance] += 1)
-      : (result[keyAppearance] = 1);
+    result[keyAppearance] ||= 0;
+    result[keyAppearance] += 1;
     return result;
   }, {});
   return keyCount;
@@ -75,9 +71,8 @@ function getMostPopularBooks(books) {
 function getMostPopularAuthors(books, authors) {
   // Reduce to object of author IDs and the borrows they have
   const authorBorrows = books.reduce((result, book) => {
-    result[book.authorId]
-      ? (result[book.authorId] += book.borrows.length)
-      : (result[book.authorId] = book.borrows.length);
+    result[book.authorId] ||= 0;
+    result[book.authorId] += book.borrows.length;
     return result;
   }, {});
   const authorIdBorrowsArray = [];
